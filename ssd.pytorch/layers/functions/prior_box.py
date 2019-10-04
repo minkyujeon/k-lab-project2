@@ -4,7 +4,7 @@ from itertools import product as product
 import torch
 
 
-class PriorBox(object):
+class PriorBox(object): #논문 상에서 default box -> 
     """Compute priorbox coordinates in center-offset form for each source
     feature map.
     """
@@ -36,6 +36,7 @@ class PriorBox(object):
 
                 # aspect_ratio: 1
                 # rel size: min_size
+                # scale of the default boxes for each feature map
                 s_k = self.min_sizes[k]/self.image_size
                 mean += [cx, cy, s_k, s_k]
 

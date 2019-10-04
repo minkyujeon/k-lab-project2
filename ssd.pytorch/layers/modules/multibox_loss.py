@@ -90,16 +90,25 @@ class MultiBoxLoss(nn.Module):
         loss_l = F.smooth_l1_loss(loc_p, loc_t, size_average=False)
 
         # Compute max conf across batch for hard negative mining
+        # print('conf_data:',conf_data.shape) # [32,8732,21]
         batch_conf = conf_data.view(-1, self.num_classes)
-        loss_c = log_sum_exp(batch_conf) - batch_conf.gather(1, conf_t.view(-1, 1))
+        # print('batch_conf:',batch_conf.shape) #[279424, 21]
+        # print('log_sum_exp :',log_sum_exp(batch_conf).shape) # [279424,1]
+        # print('batch_conf.gather:',batch_conf.gather(1, conf_t.view(-1,1)).shape) #[279424,1]
+        loss_c = log_sum_exp(batch_conf) - batch_conf.gather(1, conf_t.view(-1, 1)) #[279424,1]
 
         # Hard Negative Mining
+        # print('loss_c:',loss_c.shape) # [279424,1]
+        # print('pos:',pos.shape) #[32,8732]
+        loss_c = loss_c.view(pos.shape[0],-1) #pos/loss_c 둘중 하나는 shape이 틀림
         loss_c[pos] = 0  # filter out pos boxes for now
-        loss_c = loss_c.view(num, -1)
+        loss_c = loss_c.view(num, -1) # 여기서 펴주는걸 보니 loss_c가 원래 펴진 상태가 아니었을듯
         _, loss_idx = loss_c.sort(1, descending=True)
         _, idx_rank = loss_idx.sort(1)
         num_pos = pos.long().sum(1, keepdim=True)
         num_neg = torch.clamp(self.negpos_ratio*num_pos, max=pos.size(1)-1)
+        # print('num_neg:',num_neg.shape) # [32,1]
+        # print('idx_rank:',idx_rank.shape) # [32,8732]
         neg = idx_rank < num_neg.expand_as(idx_rank)
 
         # Confidence Loss Including Positive and Negative Examples
