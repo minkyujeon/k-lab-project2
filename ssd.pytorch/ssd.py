@@ -149,9 +149,10 @@ def vgg(cfg, i, batch_norm=False):
 def add_extras(cfg, i, batch_norm=False):
     # Extra layers added to VGG for feature scaling
     layers = []
-    in_channels = i
+    in_channels = i #1024
     flag = False
     for k, v in enumerate(cfg):
+        # k : idx, v : extras의 channel
         if in_channels != 'S':
             if v == 'S':
                 layers += [nn.Conv2d(in_channels, cfg[k + 1],
@@ -180,7 +181,7 @@ def multibox(vgg, extra_layers, cfg, num_classes):
     return vgg, extra_layers, (loc_layers, conf_layers)
 
 
-base = {
+base = { #VGG
     '300': [64, 64, 'M', 128, 128, 'M', 256, 256, 256, 'C', 512, 512, 512, 'M',
             512, 512, 512],
     '512': [],
