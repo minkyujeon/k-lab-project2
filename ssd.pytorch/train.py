@@ -165,7 +165,13 @@ def train():
 
         # load train data
         # print('batch_iterator:',len(batch_iterator)) # 518
-        images, targets = next(batch_iterator)
+        # 이 부분에서 StopIteration error가 남
+        # len(batch_iterator) = :# of data/batch_size -> new batch_iterator를 정의할 필요가 있다
+        try: 
+            images, targets = next(batch_iterator)
+        except StopIteration:
+            batch_iterator = iter(data_loader) #새로운 batch_iterator 정의
+            images, targets = next(batch_iterator)
 
         if args.cuda:
             images = Variable(images.cuda())
