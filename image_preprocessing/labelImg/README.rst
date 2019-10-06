@@ -1,7 +1,7 @@
 LabelImg
 ========
 
-### original code : https://github.com/tzutalin/labelImg
+- original code : https://github.com/tzutalin/labelImg
 
 .. image:: https://img.shields.io/pypi/v/labelimg.svg
 ​        :target: https://pypi.python.org/pypi/labelimg
