@@ -19,7 +19,7 @@ def parse_args():
     parser.add_argument('-i', '--image_set', default='train_txt')  # this value is enabled if general dataset is selected
     parser.add_argument('--resume', '-r', default=None, help='resume net for retraining')
     parser.add_argument('--epoch', '-e', type=int, default=100)
-    parser.add_argument('--batch_size', '-b', type=int, default=32)
+    parser.add_argument('--batch_size', '-b', type=int, default=8)
     parser.add_argument('--num_workers', '-w', type=int, default=8)
     return parser.parse_args()
 
@@ -50,8 +50,8 @@ def main():
 
     writer = SummaryWriter()
 
-    device = torch.device("cuda:0")# if torch.cuda.is_available() else "cpu")
-
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    print('device:',device)
     priors = get_priors(device, cfg)
     net = get_model(device, cfg)
 
@@ -73,7 +73,7 @@ def main():
         dataset = get_general_dataset(cfg, args.root_dir, args.image_set)
     else:
         dataset = get_dataloader(cfg, args.dataset, 'train_sets')
-
+    print('detection_collate:',detection_collate)
     data_loader = DataLoader(dataset,
                                   batch_size=args.batch_size,
                                   shuffle=True,
@@ -86,12 +86,14 @@ def main():
         running_l_loss = 0
         running_c_loss = 0
         print(f"Epoch {epoch} started!")
+        
         for i, data in enumerate(tqdm(data_loader)):
             images, targets = data
             images = images.to(device)
             targets = [anno.to(device) for anno in targets]
-            print('cuda:',cuda)
+            print('targets:',targets)
             optimizer.zero_grad()
+            # print('i:',i,'images:',images.shape)
             out = net(images)
 
             loss_l, loss_c = criterion(out, priors, targets)
