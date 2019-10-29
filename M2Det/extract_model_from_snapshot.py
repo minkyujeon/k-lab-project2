@@ -3,7 +3,7 @@ import argparse
 import torch
 
 parser = argparse.ArgumentParser()
-parser.add_argument('-s', '--snapshot_path')
+parser.add_argument('-s', '--snapshot_path', default='results/m2det_snapshot_e70.pt')
 parser.add_argument('-o', '--output', default='results/model.pt')
 parser.add_argument('-c', '--config', default='configs/m2det320_resnet101.py')
 args = parser.parse_args()

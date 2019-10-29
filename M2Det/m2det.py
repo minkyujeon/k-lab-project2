@@ -113,7 +113,7 @@ class M2Det(nn.Module):
             (self.reduce(base_feats[0]), F.interpolate(self.up_reduce(base_feats[1]), scale_factor=2, mode='nearest')),
             1
         )
-        print('self.leach[0]:',self.leach[0](base_feature).shape)
+        
         # tum_outs is the multi-level multi-scale feature
         tum_outs = [getattr(self, 'unet{}'.format(1))(self.leach[0](base_feature), 'none')]
         for i in range(1, self.num_levels, 1):

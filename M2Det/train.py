@@ -15,11 +15,11 @@ def parse_args():
     parser = argparse.ArgumentParser(description='M2Det Training')
     parser.add_argument('-c', '--config', default='configs/m2det320_resnet101.py')
     parser.add_argument('-d', '--dataset', default='general', choices=['COCO', 'VOC', 'general'])
-    parser.add_argument('-rd', '--root_dir', default='/home/jeon/Desktop/k-lab/train_our_data_M2Det/M2Det/dataset_folder')  # this value is enabled if general dataset is selected
+    parser.add_argument('-rd', '--root_dir', default='/home/jeon/Desktop/mnt/mnt001/k-lab/train_data/dataset_folder')  # this value is enabled if general dataset is selected
     parser.add_argument('-i', '--image_set', default='train_txt')  # this value is enabled if general dataset is selected
     parser.add_argument('--resume', '-r', default=None, help='resume net for retraining')
     parser.add_argument('--epoch', '-e', type=int, default=100)
-    parser.add_argument('--batch_size', '-b', type=int, default=8)
+    parser.add_argument('--batch_size', '-b', type=int, default=10)
     parser.add_argument('--num_workers', '-w', type=int, default=8)
     return parser.parse_args()
 
@@ -73,11 +73,12 @@ def main():
         dataset = get_general_dataset(cfg, args.root_dir, args.image_set)
     else:
         dataset = get_dataloader(cfg, args.dataset, 'train_sets')
-    print('detection_collate:',detection_collate)
+    
     data_loader = DataLoader(dataset,
                                   batch_size=args.batch_size,
                                   shuffle=True,
                                   num_workers=args.num_workers,
+                                  drop_last=True,
                                   collate_fn=detection_collate)
 
     for epoch in range(start_epoch, args.epoch):
@@ -91,9 +92,12 @@ def main():
             images, targets = data
             images = images.to(device)
             targets = [anno.to(device) for anno in targets]
-            print('targets:',targets)
+        
+            # if images.shape[0] != args.batch_size:
+            #     continue #->DataLoader drop_last로 대체
+            
             optimizer.zero_grad()
-            # print('i:',i,'images:',images.shape)
+            
             out = net(images)
 
             loss_l, loss_c = criterion(out, priors, targets)
@@ -109,8 +113,8 @@ def main():
         print('epoch: {}, loc_loss: {:.4f}, conf_loss: {:.4f}'.format(epoch, l_loss, c_loss))
         writer.add_scalar('data/loc_loss', l_loss, epoch)
         writer.add_scalar('data/conf_loss', c_loss, epoch)
-
-        serializer.save_snapshots(epoch, net, optimizer, exp_lr_scheduler, f"results/m2det_snapshot_e{epoch}.pt")
+        if epoch % 10 == 0:
+            serializer.save_snapshots(epoch, net, optimizer, exp_lr_scheduler, f"results/m2det_snapshot_e{epoch}.pt")
 
 
 if __name__ == '__main__':

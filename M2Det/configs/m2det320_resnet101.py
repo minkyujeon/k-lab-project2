@@ -13,7 +13,10 @@ model = dict(
         num_scales = 6,
         sfam = True,
         smooth = True,
-        class_names=['trash'],  # class names should be specified
+        class_names=['trash','person','bird','cat','cow','dog','horse','sheep',
+                    'aeroplane','bicycle','boat','bus','car','motorbike','train',
+                    'bottle','chair','dining table','potted plant','sofa',' tv/monitor'],  # class names should be specified
+                    
         num_classes=81, # this value is invalid if a class name is specified.
     ),
     rgb_means = (104, 117, 123),
@@ -41,8 +44,8 @@ train_cfg = dict(
 test_cfg = dict(
     topk = 0,
     iou = 0.45,
-    soft_nms = True,
-    score_threshold = 0.1,
+    soft_nms = False,
+    score_threshold = 0.7, #0.1 -> 0.5
     keep_per_class = 50,
     save_folder = 'eval'
     )
