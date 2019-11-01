@@ -14,6 +14,7 @@ model = dict(
         num_scales = 6,
         sfam = False,
         smooth = True,
+        class_names=['trash'],
         num_classes = 81,
         ),
     rgb_means = (104, 117, 123),
