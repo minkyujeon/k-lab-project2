@@ -1,4 +1,5 @@
 *.xml
 *.jpg
+*.pth
 *.ipynb_checkpoints
 __pycache__

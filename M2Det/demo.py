@@ -5,6 +5,7 @@ from m2det import build_net
 from data import BaseTransform
 from utils.core import *
 import nms.nms as nms
+# from utils import nms as nms
 
 parser = argparse.ArgumentParser(description='M2Det Testing')
 parser.add_argument('-c', '--config', default='configs/m2det320_resnet101.py', type=str)
