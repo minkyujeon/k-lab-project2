@@ -142,7 +142,7 @@ def main():
     if args.json_out is not None and args.json_out.endswith('.json'):
         args.json_out = args.json_out[:-5]
     
-    print('args.config:',args.config)
+    # print('args.config:',args.config) #config file로 가야 됨()
     cfg = mmcv.Config.fromfile(args.config)
     # set cudnn_benchmark
     if cfg.get('cudnn_benchmark', False):

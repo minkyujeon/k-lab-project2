@@ -1,3 +1,4 @@
+# python tools/train.py configs/ttfnet/ttfnet_d53_2x.py
 from __future__ import division
 import argparse
 import os
@@ -14,10 +15,10 @@ from mmdet.models import build_detector
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Train a detector')
-    parser.add_argument('config', help='train config file path')
-    parser.add_argument('--work_dir', help='the dir to save logs and models')
+    parser.add_argument('config', default='configs/ttfnet/ttfnet_d53_2x.py', help='train config file path')
     parser.add_argument(
         '--resume_from', help='the checkpoint file to resume from')
+    parser.add_argument('--work_dir', help='the dir to save logs and models')
     parser.add_argument(
         '--validate',
         action='store_true',
@@ -82,7 +83,7 @@ def main():
 
     model = build_detector(
         cfg.model, train_cfg=cfg.train_cfg, test_cfg=cfg.test_cfg)
-
+    # print('cfg.data.train:',cfg.data.train)
     train_dataset = build_dataset(cfg.data.train)
     if cfg.checkpoint_config is not None:
         # save mmdet version, config file content and class names in
