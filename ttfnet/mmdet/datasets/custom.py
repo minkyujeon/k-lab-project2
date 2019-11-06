@@ -37,7 +37,7 @@ class CustomDataset(Dataset):
     The `ann` field is optional for testing.
     """
 
-    CLASSES = None
+    CLASSES = 'trash' #None
 
     def __init__(self,
                  ann_file,

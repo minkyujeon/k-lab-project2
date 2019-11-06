@@ -18,6 +18,7 @@ class XMLDataset(CustomDataset):
 
     def load_annotations(self, ann_file):
         img_infos = []
+        # print('ann_file:',ann_file)
         img_ids = mmcv.list_from_file(ann_file)
         for img_id in img_ids:
             filename = 'JPEGImages/{}.jpg'.format(img_id)
