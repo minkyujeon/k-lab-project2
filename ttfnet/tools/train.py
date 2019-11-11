@@ -75,6 +75,7 @@ def main():
 
     # init logger before other steps
     logger = get_root_logger(cfg.log_level)
+    print('logger:',logger)
     logger.info('Distributed training: {}'.format(distributed))
 
     # set random seeds
@@ -99,7 +100,7 @@ def main():
         model,
         train_dataset,
         cfg,
-        distributed=distributed,
+        distributed=distributed, #default : False
         validate=args.validate,
         logger=logger)
 
