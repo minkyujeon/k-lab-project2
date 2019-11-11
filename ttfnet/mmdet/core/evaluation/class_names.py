@@ -12,6 +12,11 @@ def voc_classes():
         'pottedplant', 'sheep', 'sofa', 'train', 'tvmonitor'
     ]
 
+def own_classes():
+    return [
+        'trash'
+    ]
+
 
 def imagenet_det_classes():
     return [

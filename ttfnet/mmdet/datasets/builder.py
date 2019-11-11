@@ -34,7 +34,7 @@ def build_dataset(cfg, default_args=None):
             build_dataset(cfg['dataset'], default_args), cfg['times'])
     elif isinstance(cfg['ann_file'], (list, tuple)):
         dataset = _concat_dataset(cfg, default_args)
-    else:
+    else: #Coco Dataset
         dataset = build_from_cfg(cfg, DATASETS, default_args)
 
     return dataset

@@ -40,6 +40,15 @@ class SingleStageDetector(BaseDetector):
         x = self.backbone(img)
         if self.with_neck:
             x = self.neck(x)
+        # print('len(x):',len(x)) #4
+        # print('x:',x[3].shape)
+        # x[0].shape : (12, 128, 128, 128)
+        # x[1].shape : (12, 256, 64, 64)
+        # x[2].shape : (12, 512, 32, 32)
+        # x[3].shape : (12, 1024, 16, 16)
+        # (128,256,512,1024) : ttfnet_d53_2x.py, bbox_head - inplanes
+        # 12 : batch_size(imgs_per_gpu)
+
         return x
 
     def forward_train(self,
@@ -50,7 +59,14 @@ class SingleStageDetector(BaseDetector):
                       gt_bboxes_ignore=None):
         x = self.extract_feat(img)
         outs = self.bbox_head(x)
+        # print('len(outs):',len(outs[0])) # 12(batch_size)
+        # print('outs:',outs[1][0].shape) #(4,128,128)
+        # print('outs:',outs[0][0].shape) # (80,128,128)
+        
         loss_inputs = outs + (gt_bboxes, gt_labels, img_metas, self.train_cfg)
+        # print('len_loss2:',len(loss_inputs[0])) # 12
+        # print('loss_inputs1:',loss_inputs[0][0].shape) # (80,128,128)
+        # print('loss_inputs3:',loss_inputs[1][0].shape) # (4,128,128)
         losses = self.bbox_head.loss(
             *loss_inputs, gt_bboxes_ignore=gt_bboxes_ignore)
         return losses

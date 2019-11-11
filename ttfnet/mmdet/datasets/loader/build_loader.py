@@ -23,6 +23,9 @@ def build_dataloader(dataset,
     shuffle = kwargs.get('shuffle', True)
     if dist:
         rank, world_size = get_dist_info()
+        # world_size (int, optional) – Number of processes participating in the job. Required if store is specified.
+        # rank (int, optional) – Rank of the current process. Required if store is specified.
+        
         if shuffle:
             sampler = DistributedGroupSampler(dataset, imgs_per_gpu,
                                               world_size, rank)

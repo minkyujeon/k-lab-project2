@@ -38,6 +38,7 @@ class Registry(object):
         if module_name in self._module_dict:
             raise KeyError('{} is already registered in {}'.format(
                 module_name, self.name))
+
         self._module_dict[module_name] = module_class
 
     def register_module(self, cls):
@@ -61,7 +62,14 @@ def build_from_cfg(cfg, registry, default_args=None):
     args = cfg.copy()
     obj_type = args.pop('type')
     if mmcv.is_str(obj_type):
+        # print('obj_type_before:',obj_type)
         obj_type = registry.get(obj_type)
+        # print('obj_type_after:',obj_type)
+        # obj_type_before: TTFNet
+        # obj_type_after: <class 'mmdet.models.detectors.ttfnet.TTFNet'>
+        # obj_type_before: DarknetV3
+        # obj_type_after: <class 'mmdet.models.backbones.darknet.DarknetV3'>
+
         if obj_type is None:
             raise KeyError('{} is not in the {} registry'.format(
                 obj_type, registry.name))
@@ -70,5 +78,8 @@ def build_from_cfg(cfg, registry, default_args=None):
             type(obj_type)))
     if default_args is not None:
         for name, value in default_args.items():
+            # name: train_cfg value: {'vis_every_n_iters': 100, 'debug': False}
+            # name: test_cfg value: {'score_thr': 0.01, 'max_per_img': 100
             args.setdefault(name, value)
+    # print('obj_type:',obj_type(**args))
     return obj_type(**args)

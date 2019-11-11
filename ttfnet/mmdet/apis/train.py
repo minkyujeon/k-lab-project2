@@ -56,7 +56,7 @@ def train_detector(model,
     # start training
     if distributed:
         _dist_train(model, dataset, cfg, validate=validate)
-    else:
+    else: #default : Non_dist
         _non_dist_train(model, dataset, cfg, validate=validate)
 
 
@@ -198,18 +198,21 @@ def _non_dist_train(model, dataset, cfg, validate=False):
             dist=False)
     ]
     # put model on gpus
-    model = MMDataParallel(model, device_ids=range(cfg.gpus)).cuda()
+    model = MMDataParallel(model, device_ids=range(cfg.gpus)).cuda() #for multiple GPU
+    # refer : torch.nn.DataParallel(model)
 
     # build runner
     optimizer = build_optimizer(model, cfg.optimizer)
     runner = Runner(model, batch_processor, optimizer, cfg.work_dir,
                     cfg.log_level)
+    # runner : https://github.com/open-mmlab/mmcv/blob/master/mmcv/runner/runner.py
     # fp16 setting
     fp16_cfg = cfg.get('fp16', None)
+    # print('fp16_cfg:',fp16_cfg) # None
     if fp16_cfg is not None:
         optimizer_config = Fp16OptimizerHook(
             **cfg.optimizer_config, **fp16_cfg, distributed=False)
-    else:
+    else: #default!
         optimizer_config = cfg.optimizer_config
     runner.register_training_hooks(cfg.lr_config, optimizer_config,
                                    cfg.checkpoint_config, cfg.log_config)
