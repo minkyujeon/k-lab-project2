@@ -10,7 +10,9 @@ https://github.com/CMU-Perceptual-Computing-Lab/openpose/blob/master/doc/install
 
 여기에서 Installation 부분만 보면 됨. (거의 볼 필요없음)
 
-https://github.com/CMU-Perceptual-Computing-Lab/openpose/blob/master/doc/prerequisites.md
+
+
+https://github.com/CMU-Perceptual-Computing-Lab/openpose/blob/master/doc/prerequisites.md (여기에서 환경세팅하면 됩니다.)
 
 sudo apt-get install cmake-qt-gui
 
