@@ -6,4 +6,4 @@ from .coco import CocoDataset
 @DATASETS.register_module
 class MyDataset(CocoDataset):
 
-    CLASSES = ('trash')
+    CLASSES = ('trash','person')

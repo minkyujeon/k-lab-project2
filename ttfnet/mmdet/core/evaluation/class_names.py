@@ -14,7 +14,7 @@ def voc_classes():
 
 def own_classes():
     return [
-        'trash'
+        'trash','person'
     ]
 
 
