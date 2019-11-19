@@ -1,6 +1,13 @@
 from mmdet.apis import init_detector, inference_detector, show_result
 import mmcv
 
+from openpose_pytorch.models.with_mobilenet import PoseEstimationWithMobileNet
+from openpose_pytorch.modules.keypoints import extract_keypoints, group_keypoints
+from openpose_pytorch.modules.load_state import load_state
+from openpose_pytorch.modules.pose import Pose, propagate_ids
+from openpose_pytorch.val import normalize, pad_width
+
+
 config_file = '/home/Downloads/k-lab/ttfnet/configs/ttfnet/ttfnet_d53_2x.py'
 checkpoint_file = '/home/Downloads/k-lab/ttfnet/pretrain/epoch_24.pth'
 
