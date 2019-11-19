@@ -89,6 +89,7 @@ def run_demo(net, image_provider, height_size, cpu, track_ids):
     num_keypoints = Pose.num_kpts
     previous_poses = []
     for img in image_provider:
+        
         orig_img = img.copy()
         heatmaps, pafs, scale, pad = infer_fast(net, img, height_size, stride, upsample_ratio, cpu)
 
@@ -98,10 +99,12 @@ def run_demo(net, image_provider, height_size, cpu, track_ids):
             total_keypoints_num += extract_keypoints(heatmaps[:, :, kpt_idx], all_keypoints_by_type, total_keypoints_num)
 
         pose_entries, all_keypoints = group_keypoints(all_keypoints_by_type, pafs, demo=True)
+        # print('all_keypoints:', all_keypoints.shape[0])
         for kpt_id in range(all_keypoints.shape[0]):
             all_keypoints[kpt_id, 0] = (all_keypoints[kpt_id, 0] * stride / upsample_ratio - pad[1]) / scale
             all_keypoints[kpt_id, 1] = (all_keypoints[kpt_id, 1] * stride / upsample_ratio - pad[0]) / scale
         current_poses = []
+        # print('pose_entries:',pose_entries)
         for n in range(len(pose_entries)):
             if len(pose_entries[n]) == 0:
                 continue
@@ -134,7 +137,7 @@ if __name__ == '__main__':
         description='''Lightweight human pose estimation python demo.
                        This is just for quick results preview.
                        Please, consider c++ demo for the best performance.''')
-    parser.add_argument('--checkpoint-path', type=str, required=True, help='path to the checkpoint')
+    parser.add_argument('--checkpoint-path', type=str, default='./checkpoint_iter_370000.pth', required=True, help='path to the checkpoint')
     parser.add_argument('--height-size', type=int, default=256, help='network input layer height size')
     parser.add_argument('--video', type=str, default='', help='path to video file or camera id')
     parser.add_argument('--images', nargs='+', default='', help='path to input image(s)')
