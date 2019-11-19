@@ -19,13 +19,15 @@ def main(config_file, checkpoint_file):
     #     show_result(imgs[i], result, model.CLASSES, out_file='result_{}.jpg'.format(i))
 
     # test a video and show the results
-    video = mmcv.VideoReader('IMG_8208.MOV') #('video.mp4')
+    video = mmcv.VideoReader('IMG_8209.MOV') #('video.mp4')
     # https://github.com/open-mmlab/mmcv/blob/master/mmcv/video/io.py
-    print('len(video):',len(video)) #129 - 5초 / 74 - 2초
+    # print('len(video):',len(video)) #129 - 5초 / 74 - 2초
 
     for frame in video:
         result = inference_detector(model, frame)
-        show_result(frame, result, model.CLASSES, wait_time=1)
+        # print('result[0]:',result[0])
+        # print('len(result):',len(result))
+        show_result(frame, result, model.CLASSES, wait_time=2)
         
 if __name__ == '__main__':
     main(config_file, checkpoint_file)
