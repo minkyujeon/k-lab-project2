@@ -158,3 +158,4 @@ def show_result(img,
         out_file=out_file)
     # print('len(person_bboxes):',len(person_bboxes))
     # print('len(object_bboxes):',len(object_bboxes))
+    return (person_bboxes, object_bboxes)

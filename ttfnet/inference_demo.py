@@ -12,10 +12,10 @@ def main(config_file, checkpoint_file):
 
     for frame in video:
         result = inference_detector(model, frame) #bbox result
-        # print('result[0]:',result[0])
-        # print('len(result):',len(result))
-        # print('model.CLASSES:',model.CLASSES)
-        show_result(frame, result, model.CLASSES, wait_time=2)
+
+        (person_bboxes, object_bboxes) = show_result(frame, result, model.CLASSES, wait_time=2)
+        print('person:',person_bboxes)
+        print('object:',object_bboxes)
         
 if __name__ == '__main__':
     main(config_file, checkpoint_file)

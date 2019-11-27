@@ -179,12 +179,12 @@ def imshow_det_bboxes(img,
         
         if label_text == 'person':
             person_bbox = (left_top, right_bottom)
-            # cv2.rectangle(
-            # img, left_top, right_bottom, bbox_color, thickness=thickness)
-            # print('person_bbox:',person_bbox)
+
         else:
             object_bbox = (left_top, right_bottom)
-
+            # print('object_bbox:',object_bbox)
+            # cv2.rectangle(
+            #     img, left_top, right_bottom, bbox_color, thickness=thickness)
         if len(bbox) > 4:
             label_text += '|{:.02f}'.format(bbox[-1])
 
