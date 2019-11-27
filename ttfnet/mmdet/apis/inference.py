@@ -5,7 +5,7 @@ import numpy as np
 import pycocotools.mask as maskUtils
 import torch
 from mmcv.runner import load_checkpoint
-
+from .image import imshow_det_bboxes
 from mmdet.core import get_classes
 from mmdet.datasets import to_tensor
 from mmdet.datasets.transforms import ImageTransform
@@ -35,10 +35,12 @@ def init_detector(config, checkpoint=None, device='cuda:0'):
         checkpoint = load_checkpoint(model, checkpoint)
         if 'CLASSES' in checkpoint['meta']:
             model.CLASSES = checkpoint['meta']['CLASSES']
+            
         else:
             warnings.warn('Class names are not saved in the checkpoint\'s '
                           'meta data, use COCO classes by default.')
-            model.CLASSES = get_classes('coco')
+            model.CLASSES = get_classes('own')
+
     model.cfg = config  # save the config in the model for convenience
     model.to(device)
     model.eval()
@@ -124,6 +126,7 @@ def show_result(img,
         bbox_result, segm_result = result
     else:
         bbox_result, segm_result = result, None
+    # print('bbox_result:',bbox_result)
     bboxes = np.vstack(bbox_result)
     # draw segmentation masks
     if segm_result is not None:
@@ -138,9 +141,13 @@ def show_result(img,
         np.full(bbox.shape[0], i, dtype=np.int32)
         for i, bbox in enumerate(bbox_result)
     ]
+    # print('labels:',labels[0]==0)
+
+
     labels = np.concatenate(labels)
-    # print('boxes:',bboxes)
-    mmcv.imshow_det_bboxes(
+    
+    # mmcv.imshow_det_bboxes(
+    (person_bboxes,object_bboxes)=imshow_det_bboxes(
         img.copy(),
         bboxes,
         labels,
@@ -149,3 +156,5 @@ def show_result(img,
         show=out_file is None,
         wait_time=wait_time,
         out_file=out_file)
+    # print('len(person_bboxes):',len(person_bboxes))
+    # print('len(object_bboxes):',len(object_bboxes))
