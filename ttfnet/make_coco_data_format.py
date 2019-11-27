@@ -167,7 +167,8 @@ def parseXmlFiles(xml_path):
                     addAnnoItem(object_name, current_image_id, current_category_id, bbox )
 
 if __name__ == '__main__':
-    xml_path = '/home/Downloads/dataset_folder/Annotations'
-    json_file = '/home/Downloads/dataset_folder/instances.json'
+    xml_path = '/home/Desktop/mnt/data/k-lab/total/xml_file' #'/home/Downloads/dataset_folder/Annotations'
+    json_file = '/home/Desktop/mnt/data/k-lab/total/new_json.json'
+    #'/home/Downloads/dataset_folder/instances.json'
     parseXmlFiles(xml_path)
     json.dump(coco, open(json_file, 'w'))

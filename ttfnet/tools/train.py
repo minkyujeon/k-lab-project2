@@ -96,6 +96,7 @@ def main():
             CLASSES=train_dataset.CLASSES)
     # add an attribute for visualization convenience
     model.CLASSES = train_dataset.CLASSES
+    print('model.CLASSES:',model.CLASSES)
     train_detector(
         model,
         train_dataset,
