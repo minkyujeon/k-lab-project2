@@ -1,3 +1,4 @@
+# python run_video.py --model=mobilenet_v2_large --video=
 import argparse
 import logging
 import time
