@@ -413,15 +413,16 @@ class TfPoseEstimator:
             npimg = np.copy(npimg)
         image_h, image_w = npimg.shape[:2]
         centers = {}
+        hands_centers = []
         for human in humans:
             # draw point
-            for i in range(common.CocoPart.Background.value):
+            for i in range(common.CocoPart.Background.value): #18
                 if i not in human.body_parts.keys():
                     continue
 
                 body_part = human.body_parts[i]
                 (idx,score) = body_part.get_part_idx_score()
-                print('image_h:',image_h, 'image_w:',image_w)
+                # print('image_h:',image_h, 'image_w:',image_w)
                 # if idx==1:
                 #     neck_y = int(body_part.y * image_h + 0.5)
                     
@@ -431,6 +432,7 @@ class TfPoseEstimator:
                         center = (int(body_part.x * image_w + 0.5), int(body_part.y * image_h + 0.5))
                         centers[i] = center
                         cv2.circle(npimg, center, 3, common.CocoColors[i], thickness=2, lineType=8, shift=0)
+                        hands_centers.append(center)
                         # cv2.rectangle(npimg, (center[0]-80,center[1]-20), (center[0]+80,center[1]+80),(0,255,0))
                         # cv2.rectangle(npimg, (center[0]-80,center[1]-20), (center[0]+80,center[1]+80),(0,255,0))
                         # cv2.rectangle(img, 시작점(x,y), 종료점(x,y), ~)
@@ -442,7 +444,7 @@ class TfPoseEstimator:
                 # npimg = cv2.line(npimg, centers[pair[0]], centers[pair[1]], common.CocoColors[pair_order], 3)
                 # cv2.line(npimg, centers[pair[0]], centers[pair[1]], common.CocoColors[pair_order], 3)
 
-        return npimg
+        return (npimg, hands_centers)
 
     def _get_scaled_img(self, npimg, scale):
         get_base_scale = lambda s, w, h: max(self.target_size[0] / float(h), self.target_size[1] / float(w)) * s

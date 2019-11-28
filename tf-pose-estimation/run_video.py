@@ -41,10 +41,18 @@ if __name__ == '__main__':
         ret_val, image = cap.read()
 
         humans = e.inference(image, resize_to_default=True, upsample_size=4.0)
+
+        # print('len(humans):',len(humans)) #frame하나당 사람의 좌표
         if not args.showBG:
             image = np.zeros(image.shape)
-        image = TfPoseEstimator.draw_humans(image, humans, imgcopy=False)
+        (image,hands_centers) = TfPoseEstimator.draw_humans(image, humans, imgcopy=False)
 
+        num_hands = len(hands_centers)
+
+        # if num_hands != 0:
+        #     for i in range(num_hands):
+        #         print('i:',i,'hands_centers_inin:',hands_centers[i])
+        
         cv2.putText(image, "FPS: %f" % (1.0 / (time.time() - fps_time)), (10, 10),  cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
         cv2.imshow('tf-pose-estimation result', image)
         fps_time = time.time()
