@@ -28,6 +28,10 @@ def main(config_file, checkpoint_file):
         n_person = len(person_bboxes)
         n_object = len(object_bboxes)
         
+        # if person_bboxes != []:
+        #     for i in range(n_person):
+        #         print('size people height : ',person_bboxes[i][1][1]-person_bboxes[i][0][1])
+        #         print('size people width :', person_bboxes[i][1][0] - person_bboxes[i][0][0])
         
         if pre_frame_object > n_object: #지금 물체의 개수가 이전 frame보다 줄었다면
             num_object = pre_frame_object #일단 num_object가 원래 물체의 개수로 넣어놓고
@@ -45,15 +49,7 @@ def main(config_file, checkpoint_file):
         if flag==1:
             i=i+1
         
-        # print('num_object:',num_object)
-        # print('n_object:',n_object)
-        # print('pre_frame_object:',pre_frame_object)
-        # print('flag : ',flag)
-        # print('i:',i)
-
         pre_frame_object = n_object
-        # print('pre_frame_object:',pre_frame_object)
-        # print('n_object:',n_object)
-
+        
 if __name__ == '__main__':
     main(config_file, checkpoint_file)
