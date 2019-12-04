@@ -1,4 +1,4 @@
-# python run_video.py --model=mobilenet_v2_large --video=
+# python run_video.py --model=mobilenet_v2_large --video=IMG_8209.MOV
 import argparse
 import logging
 import time
@@ -46,9 +46,18 @@ if __name__ == '__main__':
         if not args.showBG:
             image = np.zeros(image.shape)
         (image,hands_centers) = TfPoseEstimator.draw_humans(image, humans, imgcopy=False)
-
+        
         num_hands = len(hands_centers)
+        
+        if hands_centers != []:
+            for i in range(num_hands):
+                x = hands_centers[i][0]
+                y = hands_centers[i][1]
 
+                # hands_bbox_left_up = (x-(person_width//3, y-(person_height//24)))
+                # hands_bbox_right_down = (x+(person_width//3), y+(person_height*7//24))
+                
+        
         # if num_hands != 0:
         #     for i in range(num_hands):
         #         print('i:',i,'hands_centers_inin:',hands_centers[i])

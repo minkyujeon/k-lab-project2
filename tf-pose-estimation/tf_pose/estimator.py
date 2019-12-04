@@ -433,7 +433,7 @@ class TfPoseEstimator:
                         centers[i] = center
                         cv2.circle(npimg, center, 3, common.CocoColors[i], thickness=2, lineType=8, shift=0)
                         hands_centers.append(center)
-                        # cv2.rectangle(npimg, (center[0]-80,center[1]-20), (center[0]+80,center[1]+80),(0,255,0))
+                        cv2.rectangle(npimg, (center[0]-80,center[1]-20), (center[0]+80,center[1]+140),(0,255,0))
                         # cv2.rectangle(npimg, (center[0]-80,center[1]-20), (center[0]+80,center[1]+80),(0,255,0))
                         # cv2.rectangle(img, 시작점(x,y), 종료점(x,y), ~)
             # # draw line
@@ -549,7 +549,8 @@ class TfPoseEstimator:
 
     def inference(self, npimg, resize_to_default=True, upsample_size=1.0):
         if npimg is None:
-            raise Exception('The image is not valid. Please check your image exists.')
+            exit()
+            # raise Exception('The image is not valid. Please check your image exists.')
 
         if resize_to_default:
             upsample_size = [int(self.target_size[1] / 8 * upsample_size), int(self.target_size[0] / 8 * upsample_size)]
