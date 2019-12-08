@@ -89,9 +89,16 @@ def run_demo(net, image_provider, height_size, cpu, track_ids, model):
         net = net.cuda()
 
     stride = 8
-    upsample_ratio = 4
+    upsample_ratio = 2
     num_keypoints = Pose.num_kpts
     previous_poses = []
+    
+    count=0
+    
+    t = 0
+    pre_frame_object = 0
+    flag = 0
+    
     for img in image_provider:
         
         orig_img = img.copy()
@@ -101,24 +108,18 @@ def run_demo(net, image_provider, height_size, cpu, track_ids, model):
         (person_bboxes, object_bboxes) = show_result(img, result, model.CLASSES, wait_time=2)
         person_bboxes = list(set(person_bboxes))
         object_bboxes = list(set(object_bboxes))
-        print('person:', person_bboxes)
-        print('len_person :', len(person_bboxes))
-        print('object:', object_bboxes)
-        print('len_object :', len(object_bboxes))
-
+   
         total_keypoints_num = 0
         all_keypoints_by_type = []
         for kpt_idx in range(num_keypoints):  # 19th for bg
             total_keypoints_num += extract_keypoints(heatmaps[:, :, kpt_idx], all_keypoints_by_type, total_keypoints_num)
 
         pose_entries, all_keypoints = group_keypoints(all_keypoints_by_type, pafs, demo=True)
-        # print('all_keypoints:', all_keypoints.shape[0])
         for kpt_id in range(all_keypoints.shape[0]):
             all_keypoints[kpt_id, 0] = (all_keypoints[kpt_id, 0] * stride / upsample_ratio - pad[1]) / scale
             all_keypoints[kpt_id, 1] = (all_keypoints[kpt_id, 1] * stride / upsample_ratio - pad[0]) / scale
         current_poses = []
-        # print('pose_entries:',pose_entries)
-        # print('len_pose_entries :',len(pose_entries))
+        
         for n in range(len(pose_entries)):
             if len(pose_entries[n]) == 0:
                 continue
@@ -130,18 +131,57 @@ def run_demo(net, image_provider, height_size, cpu, track_ids, model):
             pose = Pose(pose_keypoints, pose_entries[n][18])
             current_poses.append(pose)
             hand_centers = pose.draw(img)
-            num_hands = len(hand_centers)
-        print('hand_centers : ',hand_centers)
-        # cv2.rectangle(img, (int(x_b)-80,int(y_b)-20), (int(x_b)+80,int(y_b)+80),(0,255,0))    
-        img = cv2.addWeighted(orig_img, 0.6, img, 0.4, 0)
-        if track_ids == True:
-            propagate_ids(previous_poses, current_poses)
-            previous_poses = current_poses
-            for pose in current_poses:
-                # cv2.rectangle(img, (pose.bbox[0], pose.bbox[1]),
-                            #   (pose.bbox[0] + pose.bbox[2], pose.bbox[1] + pose.bbox[3]), (0, 255, 0))
-                cv2.putText(img, 'id: {}'.format(pose.id), (pose.bbox[0], pose.bbox[1] - 16),
-                            cv2.FONT_HERSHEY_COMPLEX, 0.5, (0, 0, 255))
+        
+        num_object = 0 #손에 들고 있는 물체의 수
+
+        if hand_centers != []:
+            try:
+                hand_1, hand_2 = hand_centers[0], hand_centers[1]
+            except IndexError:
+                hand_2 = 0
+
+            h_1_x_1, h_1_y_1, h_1_x_2, h_1_y_2 = hand_1[0]-15, hand_1[1]-5, hand_1[0]+15, hand_1[1]+30
+            if hand_2!=0:
+                h_2_x_1, h_2_y_1, h_2_x_2, h_2_y_2 = hand_2[0]-15, hand_2[1]-5, hand_2[0]+15, hand_2[1]+30
+            
+            if len(object_bboxes) != 0:
+                for j in range(len(object_bboxes)):
+                    ox_1, oy_1, ox_2, oy_2 = object_bboxes[j][0][0], object_bboxes[j][0][1], object_bboxes[j][1][0], object_bboxes[j][1][1]
+                    
+                    if ox_1>h_1_x_1 and oy_1 > h_1_y_1 and ox_2 < h_1_x_2 and oy_2 < h_1_y_2:
+                        num_object += 1 #손에 들고있는 물체 + 1
+
+                    if hand_2!=0 and ox_1>h_2_x_1 and oy_1 > h_2_y_1 and ox_2 < h_2_x_2 and oy_2 < h_2_y_2:
+                        num_object += 1
+            else:
+                num_object = 0
+        
+        if pre_frame_object > num_object: 
+            count = pre_frame_object
+            flag = 1
+
+        if count == num_object:
+            flag = 0
+            t = 0
+            count = 0
+        
+        if t>=5: 
+            print('쓰레기를 버리지 마시오!')
+            t=0 #계속 메시지를 출력하는것을 방지
+            flag = 0 #계속 메시지를 출력하는것을 방지
+
+        if flag == 1:
+            t = t+1
+
+        pre_frame_object = num_object
+
+        # img = cv2.addWeighted(orig_img, 0.6, img, 0.4, 0)
+        # if track_ids == True:
+        #     propagate_ids(previous_poses, current_poses)
+        #     previous_poses = current_poses
+        #     for pose in current_poses:
+        #         cv2.putText(img, 'id: {}'.format(pose.id), (pose.bbox[0], pose.bbox[1] - 16),
+        #                     cv2.FONT_HERSHEY_COMPLEX, 0.5, (0, 0, 255))
         cv2.imshow('Lightweight Human Pose Estimation Python Demo', img)
         key = cv2.waitKey(33) #키보드 입력을 대기하는 함수로 0이면 key입력이 있을때까지 무한대기
         if key == 27:  # esc
@@ -153,7 +193,7 @@ if __name__ == '__main__':
         description='''Lightweight human pose estimation python demo.
                        This is just for quick results preview.
                        Please, consider c++ demo for the best performance.''')
-    parser.add_argument('--checkpoint-path', type=str, default='./checkpoint_iter_370000.pth', required=True, help='path to the checkpoint')
+    parser.add_argument('--checkpoint-path', type=str, default='.pytorch_openpose/checkpoint_iter_370000.pth', required=True, help='path to the checkpoint')
     parser.add_argument('--height-size', type=int, default=256, help='network input layer height size')
     parser.add_argument('--video', type=str, default='', help='path to video file or camera id')
     parser.add_argument('--images', nargs='+', default='', help='path to input image(s)')
@@ -171,7 +211,6 @@ if __name__ == '__main__':
     frame_provider = ImageReader(args.images)
     if args.video != '':
         frame_provider = mmcv.VideoReader(args.video) #mmcv로 바꿈
-    # print('cpu :', args.cpu)
 
     model = init_detector(config_file, checkpoint_file, device='cuda:0')
     run_demo(net, frame_provider, args.height_size, args.cpu, args.track_ids, model)
