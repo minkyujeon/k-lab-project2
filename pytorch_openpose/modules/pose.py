@@ -60,6 +60,7 @@ class Pose(object):
                     hand_centers.append((x_b,y_b))
                     cv2.circle(img, (int(x_b), int(y_b)), 3, Pose.color, -1)
                     cv2.rectangle(img, (int(x_b)-15,int(y_b)-5), (int(x_b)+15,int(y_b)+30),(0,255,0))
+                    # cv2.rectangle(img, (int(x_b)-20,int(y_b)-5), (int(x_b)+20,int(y_b)+40),(0,255,0))
             # if global_kpt_a_id != -1 and global_kpt_b_id != -1:
             #     cv2.line(img, (int(x_a), int(y_a)), (int(x_b), int(y_b)), Pose.color, 2)
         return hand_centers
