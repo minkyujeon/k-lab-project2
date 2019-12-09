@@ -1,4 +1,4 @@
-# python final_code.py --checkpoint-path ./pytorch_openpose/checkpoint_iter_370000.pth --video IMG_0248.MOV
+# python final_code.py --checkpoint-path ./pytorch_openpose/checkpoint_iter_370000.pth --video IMG_0248_4.MOV
 import argparse
 
 import cv2
@@ -6,6 +6,8 @@ import numpy as np
 import torch
 from ttfnet.mmdet.apis import init_detector, inference_detector, show_result
 import mmcv
+import time
+
 
 from pytorch_openpose.models.with_mobilenet import PoseEstimationWithMobileNet
 from pytorch_openpose.modules.keypoints import extract_keypoints, group_keypoints
@@ -94,11 +96,15 @@ def run_demo(net, image_provider, height_size, cpu, track_ids, model):
     previous_poses = []
     
     count=0
-    
+    hand_1 = 0
+    hand_2 = 0
     t = 0
     pre_frame_object = 0
     flag = 0
-    
+    fps_time = 0
+
+    person_width = 0
+    person_height = 0
     for img in image_provider:
         
         orig_img = img.copy()
@@ -133,16 +139,27 @@ def run_demo(net, image_provider, height_size, cpu, track_ids, model):
             hand_centers = pose.draw(img)
         
         num_object = 0 #손에 들고 있는 물체의 수
-
+        
+        # print('person_bboxes:',person_bboxes, len(person_bboxes))
+        
+        # Todo : many people
+        # if len(person_bboxes) == 1:
+        #     person_width = person_bboxes[0][1][0] - person_bboxes[0][0][0]
+        #     person_height = person_bboxes[0][1][1] - person_bboxes[0][0][1]
+        
         if hand_centers != []:
             try:
                 hand_1, hand_2 = hand_centers[0], hand_centers[1]
             except IndexError:
+                hand_1 = hand_centers[0]
                 hand_2 = 0
-
+            
             h_1_x_1, h_1_y_1, h_1_x_2, h_1_y_2 = hand_1[0]-15, hand_1[1]-5, hand_1[0]+15, hand_1[1]+30
+            # h_1_x_1, h_1_y_1, h_1_x_2, h_1_y_2 = hand_1[0]-20, hand_1[1]-5, hand_1[0]+20, hand_1[1]+40
+            
             if hand_2!=0:
                 h_2_x_1, h_2_y_1, h_2_x_2, h_2_y_2 = hand_2[0]-15, hand_2[1]-5, hand_2[0]+15, hand_2[1]+30
+                # h_2_x_1, h_2_y_1, h_2_x_2, h_2_y_2 = hand_2[0]-20, hand_2[1]-5, hand_2[0]+20, hand_2[1]+40
             
             if len(object_bboxes) != 0:
                 for j in range(len(object_bboxes)):
@@ -169,10 +186,12 @@ def run_demo(net, image_provider, height_size, cpu, track_ids, model):
             print('쓰레기를 버리지 마시오!')
             t=0 #계속 메시지를 출력하는것을 방지
             flag = 0 #계속 메시지를 출력하는것을 방지
-
+        
         if flag == 1:
             t = t+1
-
+        # print("FPS: %f" % (1.0 / (time.time() - fps_time)))
+        # fps_time = time.time()
+        
         pre_frame_object = num_object
 
         # img = cv2.addWeighted(orig_img, 0.6, img, 0.4, 0)
